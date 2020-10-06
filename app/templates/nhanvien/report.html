@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<body onload="init()">
+<div class="container">
+
+    <div class="section-top-border">
+        <div class="d-flex">
+            {% if doanhthutheonam %}
+            <div class="mr-auto p-2"><h3 class="">
+                Thống kê doanh thu theo năm {{ doanhthutheonam[0].nam }}</h3>
+            </div>
+            {% else %}
+            <div class="mr-auto p-2"><h3 class="">
+                Thống kê doanh thu theo năm </h3>
+            </div>
+            {% endif %}
+            <form class="form-inline" action="{{url_for('report')}}" method="post">
+                <input class="form-control mr-sm-2" type="date" aria-label="Search" id="ngay" name="date">
+                <button class="btn btn-outline-warning my-2 my-sm-0" type="submit">Tìm kiếm</button>
+            </form>
+        </div>
+        <div class="">
+            <div class="progress-table">
+                <div class="table-head">
+                    <div class="serial txt-style-10">Tháng</div>
+                    <div class="country txt-style-11">Số chuyến bay</div>
+                    <div class="visit">Tỷ lệ</div>
+                    <div class="country txt-style-11">Doanh thu</div>
+                </div>
+                {% if doanhthutheonam %}
+                {% for doanhthu in doanhthutheonam %}
+                <div class="table-row">
+                    <div class="serial txt-style-10">{{doanhthu.thang}}</div>
+                    <div class="country txt-style-11">{{doanhthu.so_chuyen_bay}}</div>
+                    <div class="visit">{{ "{:.2f}".format(doanhthu.ty_le) }}</div>
+                    <div class="country txt-style-11" style="font-weight: 550;">{{ "{:,.0f}".format(doanhthu.doanh_thu)
+                        }} VNĐ
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <h3 style="text-align: center; color: #ccc; margin-top: 25px;">Danh sách rỗng</h3>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+
+    <div class="section-top-border">
+        <div class="d-flex">
+            {% if doanhthutheothang %}
+            <div class="mr-auto p-2"><h3 class="">Thống kê doanh thu theo tháng {{doanhthutheothang[0].thang}}</h3>
+            </div>
+            {% else %}
+            <div class="mr-auto p-2"><h3 class="">Thống kê doanh thu theo tháng</h3>
+            </div>
+            {% endif %}
+        </div>
+        <div class="">
+            <div class="progress-table">
+                <div class="table-head">
+                    <div class="serial txt-style-10">Chuyến bay</div>
+                    <div class="country txt-style-11">Số vé</div>
+                    <div class="visit">Tỷ lệ</div>
+                    <div class="country txt-style-11">Doanh thu</div>
+                </div>
+                {% if doanhthutheothang %}
+                {% for doanhthu in doanhthutheothang %}
+                <div class="table-row">
+                    <div class="serial txt-style-10">{{doanhthu.ma_chuyen_bay}}</div>
+                    <div class="country txt-style-11">{{doanhthu.so_ve}}</div>
+                    <div class="visit">{{ "{:.2f}".format(doanhthu.ty_le) }}</div>
+                    <div class="country txt-style-11" style="font-weight: 550;">{{ "{:,.0f}".format(doanhthu.doanh_thu)
+                        }} VNĐ
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <h3 style="text-align: center; color: #ccc; margin-top: 25px;">Danh sách rỗng</h3>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    function init () {
+            var date = new Date();
+            date.setDate(date.getDate() + 1)
+            document.getElementById("ngay").value = date.toISOString().substring(0, 10);
+        }
+
+
+</script>
+{% endblock %}

@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% block body %}
+<body onload="init()">
+<section class="search_your_country">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-lg-12">
+                <div class="search_form form-style">
+                    <h1 style="text-align: center; color: #fff">Tra cứu chuyến bay</h1>
+                    <div id="form">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label class="font-weight-bold">Điểm khởi hành</label>
+                                <select id="diemDiId" class="form-control">
+                                    {% for sb in sanbay %}
+                                    <option label="{{sb.masanbay}}">{{sb.diadiem}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="font-weight-bold">Điểm đến</label>
+                                <select id="diemDenId" class="form-control">
+                                    {% for sb in sanbay %}
+                                    <option label="{{sb.masanbay}}">{{sb.diadiem}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label class="font-weight-bold">Ngày đi</label>
+                                <input type="date" class="form-control" id="ngaykhoihanh">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="font-weight-bold">Hạng ghế</label>
+                                <select id="loaive" class="form-control">
+                                    {% for lv in loaive %}
+                                    <option label="{{lv.maloaive}}">{{ lv.loaive }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary btn-style" onclick="submit()"><i
+                                class="fa fa-search"></i> Tìm chuyến bay
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+</body>
+
+{% endblock %}
+
+{% block slide %}
+<section class="popular_place padding_top">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5">
+                <div class="section_tittle text-center">
+                    <img src="static/img/section_tittle_img.png" alt="">
+                    <h2>MiDo. <span>Flight</span></h2>
+                    <p>Quản lý hệ thống bán vé máy bay với sự
+                        hướng dẫn của thầy Dương Hữu Thành</p>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-4 col-sm-6">
+                <div class="single_popular_place">
+                    <img src="static/img/icon/place_icon_1.png" alt="">
+                    <h4>Quản lý vé</h4>
+                    <p>Chỉnh sửa thông tin vé, tìm kiếm danh sách,...</p>
+                    <a href="{{ url_for('ticket_manager')}}" class="btn1">Go now</a>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6">
+                <div class="single_popular_place">
+                    <img src="static/img/icon/place_icon_2.png" alt="">
+                    <h4>Quản lý lịch bay</h4>
+                    <p>Thêm lịch bay, tìm kiếm thông tin lịch bay....</p>
+                    <a href="{{ url_for('flight_manager')}}" class="btn1">Go now</a>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6">
+                <div class="single_popular_place">
+                    <img src="static/img/icon/place_icon_3.png" alt="">
+                    <h4>Thống kê</h4>
+                    <p>Thống kê doanh thu theo tháng, năm</p>
+                    <a href="{{ url_for('report')}}" class="btn1">Go now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+
+        function init () {
+            var date = new Date();
+            date.setDate(date.getDate() + 1)
+            document.getElementById("ngaykhoihanh").value = date.toISOString().substring(0, 10);
+        }
+
+        function submit() {
+            var diemdi = document.getElementById('diemDiId')
+            var madiemdi = diemdi.options[diemdi.selectedIndex].label
+            diemdi = diemdi.options[diemdi.selectedIndex].value
+
+
+            var diemden = document.getElementById('diemDenId')
+            var madiemden = diemden.options[diemden.selectedIndex].label
+            diemden = diemden.options[diemden.selectedIndex].value
+
+            var ngaykhoihanh = document.getElementById('ngaykhoihanh').value
+
+            var loaive = document.getElementById('loaive')
+            var maloaive = loaive.options[loaive.selectedIndex].label
+
+            var msg = document.getElementById('err_msg')
+
+            if (madiemdi == madiemden)
+                    alert("Vui lòng chọn điểm đi và điểm đến phù hợp");
+            else {
+                var f = document.createElement('form')
+                f.action = "http://127.0.0.1:5000//ticket-list"
+                f.method = 'POST'
+
+                var input_madiemdi = document.createElement('input');
+                input_madiemdi.type='hidden';
+                input_madiemdi.name='madiemdi';
+                input_madiemdi.value = madiemdi
+                f.appendChild(input_madiemdi);
+
+                var input_diemdi = document.createElement('input');
+                input_diemdi.type='hidden';
+                input_diemdi.name='diemdi';
+                input_diemdi.value = diemdi
+                f.appendChild(input_diemdi);
+
+                var input_madiemden = document.createElement('input');
+                input_madiemden.type = 'hidden';
+                input_madiemden.name = 'madiemden';
+                input_madiemden.value = madiemden;
+                f.appendChild(input_madiemden);
+
+                var input_diemden = document.createElement('input');
+                input_diemden.type = 'hidden';
+                input_diemden.name = 'diemden';
+                input_diemden.value = diemden;
+                f.appendChild(input_diemden);
+
+                var input_ngaykhoihanh = document.createElement('input');
+                input_ngaykhoihanh.type = 'hidden';
+                input_ngaykhoihanh.name = 'ngaykhoihanh';
+                input_ngaykhoihanh.value = ngaykhoihanh;
+                f.appendChild(input_ngaykhoihanh);
+
+                var input_maloaive = document.createElement('input');
+                input_maloaive.type = 'hidden';
+                input_maloaive.name = 'maloaive';
+                input_maloaive.value = maloaive;
+                f.appendChild(input_maloaive);
+
+                document.body.appendChild(f);
+                f.submit();
+            }
+        }
+</script>
+
+{% endblock %}

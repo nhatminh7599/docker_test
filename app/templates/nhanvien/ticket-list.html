@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<script>
+        function getData () {
+            fetch("http://127.0.0.1:5000/api/lich-chuyen-bay", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "diemdi": {{madiemdi}},
+                    "diemden": {{madiemden}},
+                    "ngaykhoihanh": "{{ngaykhoihanh}}",
+                    "loaive": {{maloaive}}
+                })
+            }).then(res => res.json()).then(res => {
+                data = res.data
+                console.log(data)
+                row = document.getElementById("table")
+                if (data == '')
+                    row.innerHTML += `<h3 style="text-align: center; margin-top: 20px;">Không tìm thấy chuyến bay</h3>`
+                else {
+                    data.forEach(e => {
+                        let giave = Number(`${e.soghetrong[0].giave}`)
+                        url = "{{ url_for('ticket_detail') }}" + `?machuyenbay=${Number(`${e.machuyenbay}`)}&maloaive=${e.soghetrong[0].maloaive}&giave=${giave}`
+                        console.info(url)
+                        giave = (giave).toFixed(1).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+                        giave = giave.substring(0, giave.length - 2)
+                        row.innerHTML += `<div class="table-row">
+                                            <div class="serial">${e.tenchuyenbay}</div>
+                                            <div class="country">${e.sanbaycatcanh}</div>
+                                            <div class="visit">${e.sanbayhacanh}</div>
+                                            <div class="visit">${e.thoigianbay}</div>
+                                            <div class="visit txt-style-5">
+                                                <div style="color: #ccc; font-weight: 500;">
+                                                    <span class="txt-style-6">${giave} VND</span>/khách
+                                                </div>
+                                                <a href=${url} class="btn btn-warning txt-color-3">Chọn vé</a>
+                                            </div>
+                                        </div>`
+                    })
+                }
+                console.info(data)
+            })
+        }
+</script>
+<body onload="getData()">
+<div id="demo"></div>
+<div class="container">
+    <div class="section-top-border">
+        <h3 class="mb-30">Fight to {{diemdi}} from {{diemden}}</h3>
+        <div class="">
+            <div class="progress-table" id="table">
+                <div class="table-head">
+                    <div class="serial">Chuyến bay</div>
+                    <div class="country">Điểm khởi hành</div>
+                    <div class="visit">Điểm đến</div>
+                    <div class="visit">Thời gian bay</div>
+                    <div class="visit">
+                        <a class="dropdown-toggle" href="" type="button" id="dropdownMenuButton"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Sắp xếp
+                        </a>
+                        <div class="dropdown-menu txt-style-8" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item txt-style-9" href="#">Giá thấp nhất</a>
+                            <a class="dropdown-item txt-style-9" href="#">Thời gian bay ngắn nhất</a>
+                            <a class="dropdown-item txt-style-9" href="#">Something else here</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+
+{% endblock %}

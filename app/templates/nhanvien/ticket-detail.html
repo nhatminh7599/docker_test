@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<body>
+<section class="search_your_country">
+
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-lg-12">
+                <div class="ticket-form-detail-1 search_form">
+                    <div>
+                        <h3>Flight from {{data.diadiemdi}} to {{data.diadiemden}}</h3>
+                        <a class="txt-color"><i class="fa fa-plane"></i> {{data.sanbaycatcanh}} -> {{data.sanbayhacanh}} &nbsp;&nbsp; | &nbsp;&nbsp;
+                            {{data.ngaykhoihanh}}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="whole-wrap">
+    <div class="container-fluid">
+        <div class="section-top-border">
+            <div class="row">
+                <div class="col-lg-8 col-md-8">
+                    <div class="ticket-form-detail-2 search_form">
+                        <div class="content-1 txt-style-2 tooltip-test" title="Chi tiết chuyến bay"
+                             data-toggle="modal" data-target="#exampleModalCenter">
+
+                            <h4 class=""><i class="fa fa-plane"></i>&nbsp; {{data.diadiemdi}} -> {{data.diadiemden}}</h4>
+                            <a class="txt-color-1">
+                                <i class="fa fa-info-circle fa-lg"></i>
+                            </a>
+                        </div>
+
+                        <div>
+                            <h5><i class="fa fa-calendar"></i>&nbsp; {{data.ngaykhoihanh}} </h5>
+
+                            <div class="content-2">{{data.diadiemdi}} - {{data.diadiemden}}</div>
+                            <div class="content-3">
+                                <div class="content-3-1">Thời gian khởi hành</div>
+                                <div class="content-3-1">Thời gian bay</div>
+                                <div class="content-3-1">Điểm dừng</div>
+                            </div>
+                            <div class="content-4">
+                                <div class="content-4-1">{{data.giokhoihanh}}</div>
+                                <div class="content-4-1">{{data.thoigianbay}} phút</div>
+                                <div class="content-4-1">
+                                    <i class="fa fa-circle fa-xs" style="color: #ffc412"></i>
+                                    {{data.sodiemdung}} điểm dừng
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4 mt-sm-30">
+                    <div class="ticket-form-detail-3 search_form">
+                        <div class="content-1">
+                            <h5>Tóm tắt</h5>
+                        </div>
+                        <div class="content-4">
+                            <div class="content-4-1">Hạng vé</div>
+                            <div class="content-4-1 txt-style">{{data.loaive}}</div>
+                        </div>
+                        <div class="content-4">
+                            <div class="content-4-1">Giá vé</div>
+                            <div class="content-4-1 txt-style">{{giave}} VND</div>
+                        </div>
+                        <br>
+                        <a href="{{ url_for('ticket_fill_form', machuyenbay=data.machuyenbay, maloaive=data.maloaive, giave=giave) }}"
+                           class="btn btn-primary txt-color-2">Tiếp Tục</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal chi tiết tuyến bay -->
+<div class="modal fade modal-style" id="exampleModalCenter" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalCenterTitle"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">
+                    <i class="fa fa-info-circle fa-lg"></i>&nbsp;Chi tiết chuyến bay</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <h5><i class="fa fa-calendar"></i>&nbsp; {{data.ngaykhoihanh}}</h5>
+
+                    <div class="content-5">
+                        <div class="content-3-1 align-self-center">{{data.diadiemdi}} - {{data.diadiemden}}</div>
+                        <div class="content-3-2">
+                            <div class="content-5-1">{{data.sanbaycatcanh}}</div>
+                            <div class="content-5-1">
+                                <svg fill="#1BA0E2" class="_1bAqu" height="24" stroke="currentColor"
+                                     stroke-linecap="round"
+                                     viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"
+                                     xmlns:xlink="http://www.w3.org/1999/xlink">
+                                    <path stroke-width="0" d="M18,16 L18.9906311,16 C19.5480902,16
+                                    20,16.4438648 20,17 C20,17.5522847 19.5566468,18 18.9906311,18
+                                    L17.0093689,18 C16.7291101,18 16.4755289,17.8878128 16.292637,17.7055736
+                                    C16.1119255,17.5281825 16,17.2782339 16,17.0001925 L16,13.9998075
+                                    C16,13.4476291 16.4438648,13 17,13 C17.5522847,13 18,13.4437166 18,13.9998075
+                                    L18,16 Z M8.24178776,9.8546238 C7.88429748,8.52045191 8.67602584,7.1500796
+                                    10.0111732,6.79232794 L13.8716395,5.75791912 C15.2073171,5.40002538
+                                    16.5765677,6.18711609 16.9351202,7.52525239 C17.2926105,8.85942429
+                                    16.5008821,10.2297966 15.1657347,10.5875483 L11.3052685,11.6219571
+                                    C9.96959081,11.9798508 8.6003403,11.1927601 8.24178776,9.8546238 Z
+                                    M10.1736394,9.33698571 C10.2458694,9.60655185 10.5172538,9.7625526
+                                    10.7876304,9.69010542 L14.6480966,8.6556966 C14.916569,8.58375965
+                                    15.0748062,8.30987283 15.0032685,8.04289048 C14.9310385,7.77332434
+                                    14.6596542,7.61732359 14.3892776,7.68977078 L10.5288113,8.72417959
+                                    C10.260339,8.79611654 10.1021017,9.07000336 10.1736394,9.33698571 Z
+                                    M7.61026575,11.5767539 C6.92028219,11.7616344 6.22334496,11.6924001
+                                    5.61875995,11.4258618 C4.82800188,11.1720883 4.10713778,10.6968928
+                                    3.6367359,10.0623577 L1.53335431,7.2250616 C0.453665967,5.76864706
+                                    1.0751464,4.01034821 2.83907916,3.53770385 L3.47971758,3.3660453
+                                    C4.34110721,3.13523665 5.46249313,3.39785772 6.12274898,3.98501165
+                                    L6.61614309,4.42377836 C6.69638727,4.4951381 6.85132084,4.5331793
+                                    6.95763808,4.50469168 L15.9818584,2.08665912 C16.7958195,1.8685589
+                                    17.6216936,2.07404086 18.2246624,2.56929054 C19.648346,2.44645733
+                                    20.9934361,3.35257703 21.3765208,4.78226843 C21.8050529,6.38157206
+                                    20.8532813,8.02829857 19.2513431,8.45753661 L18.2873459,8.71583887
+                                    C17.754945,8.85849527 17.2084681,8.54540064 17.0645297,8.00821531
+                                    C16.9215879,7.4747492 17.2357245,6.92706763 17.7745052,6.78270178
+                                    L18.7432997,6.52311408 C19.2719819,6.38145409 19.587592,5.83330189
+                                    19.4446691,5.29990652 C19.3004045,4.76150374 18.75846,4.44849952
+                                    18.2256616,4.59126243 L17.649211,4.74572189 C17.4232492,4.80626817
+                                    17.2072309,4.67708021 17.1495403,4.46177598 L17.1245889,4.36865587
+                                     C17.052226,4.09859378 16.7819605,3.94282478 16.5139114,4.01464831
+                                     L6.49747753,6.69854369 C6.39088868,6.72710408 6.23643368,6.69351276
+                                     6.15479931,6.62289729 L4.81765611,5.46623978 C4.66096258,5.33069652
+                                     4.23048366,5.2354305 4.01690158,5.29265965 L3.36410336,5.4675764
+                                     C2.95716755,5.57661452 2.90712781,5.71215141 3.14694458,6.02880743
+                                     L5.2649094,8.82538538 C5.48677287,9.1183357 5.86898334,9.97277674
+                                     7.14071508,9.63201725 L7.15162731,9.62909332 C7.68223539,9.48691731
+                                     8.2272589,9.80040138 8.37119728,10.3375867 C8.51413909,10.8710528
+                                     8.19163219,11.4209772 7.66509197,11.5620632 L7.61026575,11.5767539
+                                     Z M17,23 C13.6862915,23 11,20.3137085 11,17 C11,13.6862915
+                                     13.6862915,11 17,11 C20.3137085,11 23,13.6862915 23,17 C23,20.3137085
+                                     20.3137085,23 17,23 Z M17,21 C19.209139,21 21,19.209139 21,17 C21,14.790861
+                                     19.209139,13 17,13 C14.790861,13 13,14.790861 13,17 C13,19.209139
+                                     14.790861,21 17,21 Z"></path>
+                                </svg>
+                                {{data.thoigianbay}} phút
+                            </div>
+                            <div class="content-5-1">{{data.sanbayhacanh}}</div>
+                        </div>
+                    </div>
+                    <div>
+                        {% if data.sodiemdung > 0 %}
+                        {% for diemdung in data.sanbaytrunggian %}
+                        <h4 class="txt-style-1">Điểm dừng thứ {{diemdung.thutu}}</h4>
+                        <div class="content-6">
+                            <div class="content-4-1">Địa điểm dừng</div>
+                            <div class="content-4-1">Thời gian dừng</div>
+                        </div>
+                        <div class="content-6">
+                            <div class="content-4-1">{{diemdung.diadiemdung}}</div>
+                            <div class="content-4-1">{{diemdung.thoigiandung}} phút</div>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+{% endblock %}

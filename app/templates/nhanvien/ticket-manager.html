@@ -1,0 +1,733 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+
+<div class="container table-style">
+    <div class="section-top-border">
+        <div class="d-flex">
+            <div class="mr-auto p-2"><h3 class="">Quản lý vé khách hàng</h3></div>
+            <form class="form-inline" method="post" action="{{ url_for('ticket_manager') }}" id="form">
+                <input class="form-control mr-sm-2" id="input" name="kw" type="number" placeholder="Nhập CMND hoặc SDT"
+                       value="" aria-label="Search">
+                <input class="btn btn-outline-warning my-2 my-sm-0" type="submit" id="timkiem" value="Tìm kiếm">
+            </form>
+        </div>
+        <div class="">
+            <div class="progress-table" id="table">
+                <div class="table-head">
+                    <div class="serial">Mã vé</div>
+                    <div class="country">Tên khách hàng</div>
+                    <div class="country">Tên chuyến bay</div>
+                    <div class="country">Loại vé</div>
+                    <div class="visit row-style">
+                        <a class="dropdown-toggle" href="" type="button" id="dropdownMenuButton"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Sắp xếp
+                        </a>
+                        <div class="dropdown-menu txt-style-8" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item txt-style-9" href="#">Action</a>
+                            <a class="dropdown-item txt-style-9" href="#">Another action</a>
+                            <a class="dropdown-item txt-style-9" href="#">Something else here</a>
+                        </div>
+                    </div>
+                </div>
+                {% if ve != '' %}
+                    {% for v in ve.items %}
+                    <div class="table-row">
+                        <div class="serial">{{v.mave}}</div>
+                        <div class="country" style="font-weight: 550;"
+                             data-toggle="modal" data-target="#exampleModalCenter">{{v.khachhang.ten}}
+                        </div>
+                        <div class="country">{{v.lichchuyenbay}}</div>
+                        <div class="country">{{v.loaive}}</div>
+                        <div class="visit txt-style-5 row-style">
+                            {% if v.trangthai == 2 %}
+                            <div style="color: #ccc; font-weight: 500; font-size: 16px;">
+                                <span>(Đang đặt)</span>
+                            </div>
+                            <div class="txt-style-7">
+                                <a href="" class="btn btn-warning"
+                                   data-toggle="modal" data-target="#exampleModalCenter1"
+                                   onmousedown="showModalChinhSuaVe({{v.khachhang.makhachhang}}, {{v.mave}})">Chỉnh sửa</a>
+                                &nbsp;
+
+                                <a href="" class="btn btn-success"
+                                   data-toggle="modal" onclick=""
+                                   data-target="#exampleModalCenter5">Thanh Toán</a>
+                                &nbsp;
+                                <a href="" class="btn btn-danger"
+                                   data-toggle="modal" onclick="showModalHuyVe({{v.mave}}, {{v.khachhang.makhachhang}})"
+                                   data-target="#exampleModalCenter3">Hủy vé</a>
+                            </div>
+                            {% else %}
+                            <div style="color: #ccc; font-weight: 500; font-size: 16px;">
+                                <span>(Đã thanh toán)</span>
+                            </div>
+                            <div class="txt-style-7">
+                                <a href="" class="btn btn-warning"
+                                   data-toggle="modal" data-target="#exampleModalCenter1"
+                                   onmousedown="showModalChinhSuaVe({{v.khachhang.makhachhang}}, {{v.mave}})">Chỉnh sửa</a>
+                                &nbsp;
+                                <button class="btn btn-secondary"
+                                        data-toggle="modal"
+                                        data-target="#exampleModalCenter3">Hủy vé
+                                </button>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                <!--                <div class="table-row">-->
+                <!--                    <div class="serial">${v.ma_ve}</div>-->
+                <!--                    <div class="country" style="font-weight: 550;"-->
+                <!--                         data-toggle="modal" data-target="#exampleModalCenter">${e.ten}-->
+                <!--                    </div>-->
+                <!--                    <div class="visit">${v.tenchuyenbay}</div>-->
+                <!--                    <div class="country">${v.loaive}</div>-->
+                <!--                    <div class="visit txt-style-5">-->
+                <!--                        <div style="color: #ccc; font-weight: 500; font-size: 16px;">-->
+                <!--                            <span>(Đang đặt)</span>-->
+                <!--                        </div>-->
+                <!--                        <div class="txt-style-7">-->
+                <!--                            <a href="" class="btn btn-warning"-->
+                <!--                               data-toggle="modal" data-target="#exampleModalCenter1">Chỉnh sửa</a>-->
+                <!--                            &nbsp;-->
+                <!--                            <a href="" class="btn btn-danger"-->
+                <!--                               data-toggle="modal" onclick=""-->
+                <!--                               data-target="#exampleModalCenter5">Thanh Toán</a>-->
+                <!--                            &nbsp;-->
+                <!--                            <a href="" class="btn btn-danger"-->
+                <!--                               data-toggle="modal" onclick="showModalHuyVe(${v.ma_ve})"-->
+                <!--                               data-target="#exampleModalCenter3">Hủy vé</a>-->
+
+                <!--                        </div>-->
+                <!--                    </div>-->
+                <!--                </div>-->
+                &nbsp;
+                    <ul class="pagination">
+                        {% if ve.has_prev %}
+                        <li class="page-item"><a class="page-link" href="{{ url_for('ticket_manager', page_num=page_num-1, kw=kw) }}">Previous</a></li>
+                        {% else %}
+                        <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                        {% endif %}
+                        {% for page in ve.iter_pages() %}
+                        {% if page == page_num %}
+                        <li class="page-item active">
+                            <a class="page-link" href="{{ url_for('ticket_manager', page_num=page, kw=kw) }}">{{page}}</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('ticket_manager', page_num=page, kw=kw) }}">{{page}}</a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                        {% if ve.has_next %}
+                        <li class="page-item"><a class="page-link" href="{{ url_for('ticket_manager', page_num=page_num+1, kw=kw) }}">Next</a></li>
+                        {% else %}
+                        <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+                        {% endif %}
+
+                    </ul>
+                {% endif %}
+                <h3 style="text-align: center; color: #ccc; margin-top: 25px;">Danh sách vé khách hàng</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal chi tiết vé -->
+<div class="modal fade modal-style" id="exampleModalCenter" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalCenterTitle"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">
+                    <i class="fa fa-info-circle fa-lg"></i>&nbsp;Thông tin vé chi tiết</h5>
+                <button id="close" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <h5 id="tenKH"><i class="fa fa-user"></i>&nbsp; Tên khách hàng</h5>
+
+                    <div class="content-5">
+                        <div class="content-3-1 align-self-center" id="tenCB">Tên chuyến bay</div>
+                        <div class="content-3-2">
+                            <div class="content-5-1" id="loaiVe">Loại vé:</div>
+                            <div class="content-5-1" id="thoiGianBay">
+                                <svg fill="#1BA0E2" class="_1bAqu" height="24" stroke="currentColor"
+                                     stroke-linecap="round"
+                                     viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"
+                                     xmlns:xlink="http://www.w3.org/1999/xlink">
+                                    <path stroke-width="0" d="M18,16 L18.9906311,16 C19.5480902,16
+                                    20,16.4438648 20,17 C20,17.5522847 19.5566468,18 18.9906311,18
+                                    L17.0093689,18 C16.7291101,18 16.4755289,17.8878128 16.292637,17.7055736
+                                    C16.1119255,17.5281825 16,17.2782339 16,17.0001925 L16,13.9998075
+                                    C16,13.4476291 16.4438648,13 17,13 C17.5522847,13 18,13.4437166 18,13.9998075
+                                    L18,16 Z M8.24178776,9.8546238 C7.88429748,8.52045191 8.67602584,7.1500796
+                                    10.0111732,6.79232794 L13.8716395,5.75791912 C15.2073171,5.40002538
+                                    16.5765677,6.18711609 16.9351202,7.52525239 C17.2926105,8.85942429
+                                    16.5008821,10.2297966 15.1657347,10.5875483 L11.3052685,11.6219571
+                                    C9.96959081,11.9798508 8.6003403,11.1927601 8.24178776,9.8546238 Z
+                                    M10.1736394,9.33698571 C10.2458694,9.60655185 10.5172538,9.7625526
+                                    10.7876304,9.69010542 L14.6480966,8.6556966 C14.916569,8.58375965
+                                    15.0748062,8.30987283 15.0032685,8.04289048 C14.9310385,7.77332434
+                                    14.6596542,7.61732359 14.3892776,7.68977078 L10.5288113,8.72417959
+                                    C10.260339,8.79611654 10.1021017,9.07000336 10.1736394,9.33698571 Z
+                                    M7.61026575,11.5767539 C6.92028219,11.7616344 6.22334496,11.6924001
+                                    5.61875995,11.4258618 C4.82800188,11.1720883 4.10713778,10.6968928
+                                    3.6367359,10.0623577 L1.53335431,7.2250616 C0.453665967,5.76864706
+                                    1.0751464,4.01034821 2.83907916,3.53770385 L3.47971758,3.3660453
+                                    C4.34110721,3.13523665 5.46249313,3.39785772 6.12274898,3.98501165
+                                    L6.61614309,4.42377836 C6.69638727,4.4951381 6.85132084,4.5331793
+                                    6.95763808,4.50469168 L15.9818584,2.08665912 C16.7958195,1.8685589
+                                    17.6216936,2.07404086 18.2246624,2.56929054 C19.648346,2.44645733
+                                    20.9934361,3.35257703 21.3765208,4.78226843 C21.8050529,6.38157206
+                                    20.8532813,8.02829857 19.2513431,8.45753661 L18.2873459,8.71583887
+                                    C17.754945,8.85849527 17.2084681,8.54540064 17.0645297,8.00821531
+                                    C16.9215879,7.4747492 17.2357245,6.92706763 17.7745052,6.78270178
+                                    L18.7432997,6.52311408 C19.2719819,6.38145409 19.587592,5.83330189
+                                    19.4446691,5.29990652 C19.3004045,4.76150374 18.75846,4.44849952
+                                    18.2256616,4.59126243 L17.649211,4.74572189 C17.4232492,4.80626817
+                                    17.2072309,4.67708021 17.1495403,4.46177598 L17.1245889,4.36865587
+                                     C17.052226,4.09859378 16.7819605,3.94282478 16.5139114,4.01464831
+                                     L6.49747753,6.69854369 C6.39088868,6.72710408 6.23643368,6.69351276
+                                     6.15479931,6.62289729 L4.81765611,5.46623978 C4.66096258,5.33069652
+                                     4.23048366,5.2354305 4.01690158,5.29265965 L3.36410336,5.4675764
+                                     C2.95716755,5.57661452 2.90712781,5.71215141 3.14694458,6.02880743
+                                     L5.2649094,8.82538538 C5.48677287,9.1183357 5.86898334,9.97277674
+                                     7.14071508,9.63201725 L7.15162731,9.62909332 C7.68223539,9.48691731
+                                     8.2272589,9.80040138 8.37119728,10.3375867 C8.51413909,10.8710528
+                                     8.19163219,11.4209772 7.66509197,11.5620632 L7.61026575,11.5767539
+                                     Z M17,23 C13.6862915,23 11,20.3137085 11,17 C11,13.6862915
+                                     13.6862915,11 17,11 C20.3137085,11 23,13.6862915 23,17 C23,20.3137085
+                                     20.3137085,23 17,23 Z M17,21 C19.209139,21 21,19.209139 21,17 C21,14.790861
+                                     19.209139,13 17,13 C14.790861,13 13,14.790861 13,17 C13,19.209139
+                                     14.790861,21 17,21 Z"></path>
+                                </svg>
+                                120p
+                            </div>
+                            <div class="content-5-1" id="giaVe">Giá vé: 123451 VND</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="txt-style-1">Thông tin liên hệ</h4>
+                        <div class="content-6">
+                            <div class="content-4-1">CMND</div>
+                            <div class="content-4-1">Điện thoại di động</div>
+                        </div>
+                        <div class="content-6" id="row">
+                            <div class="content-4-1">123456789</div>
+                            <div class="content-4-1">098765432</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal chỉnh sửa vé -->
+<div class="modal fade modal-style" id="exampleModalCenter1" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalCenterTitle"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle1">
+                    <i class="fa fa-info-circle fa-lg"></i>&nbsp;Chỉnh sửa thông tin vé</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="search_form">
+                    <form action="">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label class="font-weight-bold">Họ tên
+                                </label>
+                                <input type="text" class="form-control" id="hoTen" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="font-weight-bold">Điện thoại di động
+                                </label>
+                                <input type="number" class="form-control" id="dtdd" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label class="font-weight-bold">CMND
+                                </label>
+                                <input type="number" class="form-control" id="cmnd" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="font-weight-bold">Email
+                                </label>
+                                <input type="text" class="form-control" id="email" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                                <label class="font-weight-bold">Tên chuyến bay
+                                </label>
+                                <input type="text" class="form-control" id="tenChuyenBay" readonly>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label class="font-weight-bold">Hạng vé
+                                </label>
+                                <input type="text" class="form-control" id="hangve" readonly>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="font-weight-bold">Giá vé
+                                </label>
+                                <input type="text" class="form-control" id="giave1" readonly>
+                            </div>
+                        </div>
+                        <input style="display: None;" id="maKH">
+                        <button type="submit" class="btn btn-primary txt-color-2" id="luuthongtin"
+                                onmousedown="luuVe()" data-dismiss="modal" data-toggle="modal"
+                                data-target="">Lưu thay đổi
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Xác nhận chỉnh sửa vé -->
+<div class="modal fade modal-style" id="exampleModalCenter2" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalCenterTitle"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle2">
+                    <i class="fa fa-exclamation-circle fa-lg" style="color: blue;"></i>&nbsp;Thông báo
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <h5 style="margin-bottom: 25px;" id="thongBao">Chỉnh sửa vé thành công!!!</h5>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Xác nhận thanh toán vé -->
+<div class="modal fade modal-style" id="exampleModalCenter5" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalCenterTitle"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle5">
+                    <i class="fa fa-exclamation-circle fa-lg" style="color: blue;"></i>&nbsp;Thông báo
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <h5 style="margin-bottom: 25px;">Bạn có muốn thanh toán vé này ???</h5>
+                    <input style="display: None;" id="maVeThanhToan">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                        data-dismiss="modal">Kiểm tra lại
+                </button>
+                <button type="button" class="btn btn-primary" onclick="thanhToan()"
+                        data-dismiss="modal">Xác nhận
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Xác nhận hủy vé -->
+<div class="modal fade modal-style" id="exampleModalCenter3" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalCenterTitle"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle3">
+                    <i class="fa fa-exclamation-circle fa-lg" style="color: blue;"></i>&nbsp;Thông báo
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <h5 style="margin-bottom: 25px;">Bạn có muốn hủy vé này ?</h5>
+                </div>
+                <input style="display: None;" id="maVeHuy">
+                <input style="display: None;" id="maKhachHang">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kiểm tra lại</button>
+                <button type="button" class="btn btn-warning" onclick="huyVe()"
+                        data-dismiss="modal">Xác nhận hủy
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    function thanhToan() {
+        var maVeThanhToan = document.getElementById("maVeThanhToan").value
+
+        fetch ('http://127.0.0.1:5000/api/sua-trang-thai-ve', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                'mave': `${maVeThanhToan}`
+            })
+        }).then(res => res.json()).then(res => {
+            if (res.status == 200)
+                alert(" Thanh toán thành công !!! ")
+
+            bt = document.getElementById("timkiem")
+            document.getElementById("input").value = {{kw}}
+
+            f = document.getElementById("form")
+            var page_num = document.createElement('input');
+            page_num.type = 'hidden';
+            page_num.name = 'page_num';
+            page_num.value = {{page_num}};
+            f.appendChild(page_num);
+            bt.click()
+        })
+    }
+
+    function showModalThanhToan(id) {
+        var maVeThanhToan = document.getElementById("maVeThanhToan")
+        maVeThanhToan.value = `${id}`
+    }
+
+    function huyVe() {
+        var maVeHuy = document.getElementById("maVeHuy").value
+        var maKhachHang = document.getElementById("maKhachHang").value
+
+        fetch('http://127.0.0.1:5000/api/del-ve', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                'mave': `${maVeHuy}`,
+                'makhachhang': `${maKhachHang}`
+            })
+        }).then(res => res.json()).then(res => {
+            if (res.status == 200)
+                alert("Hủy vé thành công !!!");
+
+            bt = document.getElementById("timkiem")
+            document.getElementById("input").value = {{kw}}
+
+            f = document.getElementById("form")
+            var page_num = document.createElement('input');
+            page_num.type = 'hidden';
+            page_num.name = 'page_num';
+            page_num.value = {{page_num}};
+            f.appendChild(page_num);
+            bt.click()
+        })
+    }
+
+    function showModalHuyVe(id, maKH) {
+        var maVeHuy = document.getElementById("maVeHuy")
+        maVeHuy.value = `${id}`
+        var maKhachHang = document.getElementById("maKhachHang")
+        maKhachHang.value = `${maKH}`
+    }
+
+    function luuVe() {
+        var hoTen = document.getElementById("hoTen").value
+        var dtdd = document.getElementById("dtdd").value
+        var cmnd = document.getElementById("cmnd").value
+        var email = document.getElementById("email").value
+        var maKH = document.getElementById("maKH").value
+
+        if (hoTen == '' ||  dtdd == ''  ||  cmnd == ''  ||  email == '') {
+            alert("Vui lòng nhập đủ thông tin")
+        }
+        else {
+            fetch ('http://127.0.0.1:5000/api/sua-khach-hang', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    'makhachhang': `${maKH}`,
+                    'tenkhachhang': `${hoTen}`,
+                    'cmnd': `${cmnd}`,
+                    'sdt': `${dtdd}`,
+                    'email': `${email}`
+                })
+            }).then(res => res.json()).then(res => {
+                var modal = document.getElementById("luuthongtin")
+                modal.dataset.target = "#exampleModalCenter2"
+                var thongBao = document.getElementById("thongBao")
+                if (res.status == 200){
+                    thongBao.innerText = "Chỉnh sửa vé thành công!!!"
+
+                    bt = document.getElementById("timkiem")
+                    document.getElementById("input").value = {{kw}}
+
+                    f = document.getElementById("form")
+                    var page_num = document.createElement('input');
+                    page_num.type = 'hidden';
+                    page_num.name = 'page_num';
+                    page_num.value = {{page_num}};
+                    f.appendChild(page_num);
+                    bt.click()
+
+                }
+                else
+                    thongBao.innerText = "Chỉnh sửa vé thất bại!!!"
+            })
+        }
+    }
+
+<!--    function timkh() {-->
+<!--        var kw = document.getElementById('input').value-->
+
+<!--        fetch ('http://127.0.0.1:5000/api/khach-hang', {-->
+<!--            method: 'POST',-->
+<!--            headers: {-->
+<!--                'Content-Type': 'application/json'-->
+<!--            },-->
+<!--            body: JSON.stringify({-->
+<!--                'kw': `${kw}`-->
+<!--            })-->
+<!--        }).then(res => res.json()).then(res => {-->
+<!--            var table = document.getElementById("table")-->
+<!--            console.log(res.data)-->
+<!--            data = res.data-->
+<!--            table.innerHTML = `<div class="table-head">-->
+<!--                                <div class="serial">Mã vé</div>-->
+<!--                                <div class="country">Tên khách hàng</div>-->
+<!--                                <div class="visit">Tên chuyến bay</div>-->
+<!--                                <div class="country">Loại vé</div>-->
+<!--                                <div class="visit">-->
+<!--                                    <a class="dropdown-toggle" href="" type="button" id="dropdownMenuButton"-->
+<!--                                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
+<!--                                        Sắp xếp-->
+<!--                                    </a>-->
+<!--                                    <div class="dropdown-menu txt-style-8" aria-labelledby="dropdownMenuButton">-->
+<!--                                        <a class="dropdown-item txt-style-9" href="#">Action</a>-->
+<!--                                        <a class="dropdown-item txt-style-9" href="#">Another action</a>-->
+<!--                                        <a class="dropdown-item txt-style-9" href="#">Something else here</a>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            `-->
+<!--            data.forEach(e => {-->
+
+<!--                e.vemaybay.forEach(v => {-->
+<!--                    if (v.trangthai == 1) {-->
+<!--                        table.innerHTML += `<div class="table-row">-->
+<!--                                        <div class="serial">${v.ma_ve}</div>-->
+<!--                                        <div class="country" style="font-weight: 550;"-->
+<!--                                             data-toggle="modal"-->
+<!--                                             data-target="#exampleModalCenter"-->
+<!--                                             onmousedown="showModalChiTietVe(${e.makhachhang}, ${v.ma_ve})">-->
+<!--                                             ${e.ten}</div>-->
+<!--                                        <div class="visit">${v.tenchuyenbay}</div>-->
+<!--                                        <div class="country">${v.loaive}</div>-->
+<!--                                        <div class="visit txt-style-5">-->
+<!--                                            <div style="color: #ccc; font-weight: 500; font-size: 16px;">-->
+<!--                                                <span>(Đã thanh toán)</span>-->
+<!--                                            </div>-->
+<!--                                            <div class="txt-style-7">-->
+<!--                                                <a href="" class="btn btn-warning"-->
+<!--                                                   data-toggle="modal"-->
+<!--                                                    data-target="#exampleModalCenter1"-->
+<!--                                                    onmousedown="showModalChinhSuaVe(${e.makhachhang}, ${v.ma_ve})">Chỉnh sửa</a>-->
+<!--                                                &nbsp;-->
+<!--                                                <button  class="btn btn-secondary" readonly>Hủy vé</button>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+<!--                                    </div>`-->
+<!--                    }-->
+<!--                    else {-->
+<!--                        table.innerHTML += `<div class="table-row">-->
+<!--                                        <div class="serial">${v.ma_ve}</div>-->
+<!--                                        <div class="country" style="font-weight: 550;"-->
+<!--                                             data-toggle="modal" data-target="#exampleModalCenter"-->
+<!--                                             onmousedown="showModalChiTietVe(${e.makhachhang}, ${v.ma_ve})">${e.ten}</div>-->
+<!--                                        <div class="visit">${v.tenchuyenbay}</div>-->
+<!--                                        <div class="country">${v.loaive}</div>-->
+<!--                                        <div class="visit txt-style-5">-->
+<!--                                            <div style="color: #ccc; font-weight: 500; font-size: 16px;">-->
+<!--                                                <span>(Đang đặt)</span>-->
+<!--                                            </div>-->
+<!--                                            <div class="txt-style-7">-->
+<!--                                                <a href="" class="btn btn-warning"-->
+<!--                                                   data-toggle="modal" data-target="#exampleModalCenter1"-->
+<!--                                                   onmousedown="showModalChinhSuaVe(${e.makhachhang}, ${v.ma_ve})">Chỉnh sửa</a>-->
+<!--                                                &nbsp;-->
+<!--                                                <a href="" class="btn btn-danger"-->
+<!--                                                data-toggle="modal" onmousedown="showModalHuyVe(${v.ma_ve}, ${e.makhachhang})"-->
+<!--                                                data-target="#exampleModalCenter3">Hủy vé</a>-->
+<!--                                                &nbsp;-->
+<!--                                                <a href="" class="btn btn-success"-->
+<!--                                                   data-toggle="modal" onclick="showModalThanhToan(${v.ma_ve})"-->
+<!--                                                   data-target="#exampleModalCenter5">Thanh Toán</a>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+<!--                                    </div>`-->
+<!--                    }-->
+<!--                })-->
+
+<!--            })-->
+<!--        })-->
+<!--    }-->
+
+    function showModalChiTietVe (makhachhang, mave) {
+        fetch('http://127.0.0.1:5000/api/chi-tiet-ve', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                'makhachhang': makhachhang,
+                'mave': mave
+            })
+        }).then(res => res.json()).then(res => {
+            data = res.data
+            var tenKH = document.getElementById("tenKH")
+            tenKH.innerHTML = `<i class="fa fa-user"></i>&nbsp; ${data.ten}`
+
+            var tenCB = document.getElementById("tenCB")
+            tenCB.innerText = `${data.tenchuyenbay}`
+
+            var loaiVe = document.getElementById("loaiVe")
+            loaiVe.innerText = `Loại vé: ${data.loaive}`
+
+            var thoiGianBay = document.getElementById("thoiGianBay")
+            thoiGianBay.innerHTML = ` <svg fill="#1BA0E2" class="_1bAqu" height="24" stroke="currentColor"
+                                     stroke-linecap="round"
+                                     viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"
+                                     xmlns:xlink="http://www.w3.org/1999/xlink">
+                                    <path stroke-width="0" d="M18,16 L18.9906311,16 C19.5480902,16
+                                    20,16.4438648 20,17 C20,17.5522847 19.5566468,18 18.9906311,18
+                                    L17.0093689,18 C16.7291101,18 16.4755289,17.8878128 16.292637,17.7055736
+                                    C16.1119255,17.5281825 16,17.2782339 16,17.0001925 L16,13.9998075
+                                    C16,13.4476291 16.4438648,13 17,13 C17.5522847,13 18,13.4437166 18,13.9998075
+                                    L18,16 Z M8.24178776,9.8546238 C7.88429748,8.52045191 8.67602584,7.1500796
+                                    10.0111732,6.79232794 L13.8716395,5.75791912 C15.2073171,5.40002538
+                                    16.5765677,6.18711609 16.9351202,7.52525239 C17.2926105,8.85942429
+                                    16.5008821,10.2297966 15.1657347,10.5875483 L11.3052685,11.6219571
+                                    C9.96959081,11.9798508 8.6003403,11.1927601 8.24178776,9.8546238 Z
+                                    M10.1736394,9.33698571 C10.2458694,9.60655185 10.5172538,9.7625526
+                                    10.7876304,9.69010542 L14.6480966,8.6556966 C14.916569,8.58375965
+                                    15.0748062,8.30987283 15.0032685,8.04289048 C14.9310385,7.77332434
+                                    14.6596542,7.61732359 14.3892776,7.68977078 L10.5288113,8.72417959
+                                    C10.260339,8.79611654 10.1021017,9.07000336 10.1736394,9.33698571 Z
+                                    M7.61026575,11.5767539 C6.92028219,11.7616344 6.22334496,11.6924001
+                                    5.61875995,11.4258618 C4.82800188,11.1720883 4.10713778,10.6968928
+                                    3.6367359,10.0623577 L1.53335431,7.2250616 C0.453665967,5.76864706
+                                    1.0751464,4.01034821 2.83907916,3.53770385 L3.47971758,3.3660453
+                                    C4.34110721,3.13523665 5.46249313,3.39785772 6.12274898,3.98501165
+                                    L6.61614309,4.42377836 C6.69638727,4.4951381 6.85132084,4.5331793
+                                    6.95763808,4.50469168 L15.9818584,2.08665912 C16.7958195,1.8685589
+                                    17.6216936,2.07404086 18.2246624,2.56929054 C19.648346,2.44645733
+                                    20.9934361,3.35257703 21.3765208,4.78226843 C21.8050529,6.38157206
+                                    20.8532813,8.02829857 19.2513431,8.45753661 L18.2873459,8.71583887
+                                    C17.754945,8.85849527 17.2084681,8.54540064 17.0645297,8.00821531
+                                    C16.9215879,7.4747492 17.2357245,6.92706763 17.7745052,6.78270178
+                                    L18.7432997,6.52311408 C19.2719819,6.38145409 19.587592,5.83330189
+                                    19.4446691,5.29990652 C19.3004045,4.76150374 18.75846,4.44849952
+                                    18.2256616,4.59126243 L17.649211,4.74572189 C17.4232492,4.80626817
+                                    17.2072309,4.67708021 17.1495403,4.46177598 L17.1245889,4.36865587
+                                     C17.052226,4.09859378 16.7819605,3.94282478 16.5139114,4.01464831
+                                     L6.49747753,6.69854369 C6.39088868,6.72710408 6.23643368,6.69351276
+                                     6.15479931,6.62289729 L4.81765611,5.46623978 C4.66096258,5.33069652
+                                     4.23048366,5.2354305 4.01690158,5.29265965 L3.36410336,5.4675764
+                                     C2.95716755,5.57661452 2.90712781,5.71215141 3.14694458,6.02880743
+                                     L5.2649094,8.82538538 C5.48677287,9.1183357 5.86898334,9.97277674
+                                     7.14071508,9.63201725 L7.15162731,9.62909332 C7.68223539,9.48691731
+                                     8.2272589,9.80040138 8.37119728,10.3375867 C8.51413909,10.8710528
+                                     8.19163219,11.4209772 7.66509197,11.5620632 L7.61026575,11.5767539
+                                     Z M17,23 C13.6862915,23 11,20.3137085 11,17 C11,13.6862915
+                                     13.6862915,11 17,11 C20.3137085,11 23,13.6862915 23,17 C23,20.3137085
+                                     20.3137085,23 17,23 Z M17,21 C19.209139,21 21,19.209139 21,17 C21,14.790861
+                                     19.209139,13 17,13 C14.790861,13 13,14.790861 13,17 C13,19.209139
+                                     14.790861,21 17,21 Z"></path>
+                                </svg> ${data.thoigianbay} phút`
+
+            var giaVe = document.getElementById("giaVe")
+            giaVe.innerText = `Giá vé: ${data.giave} VND`
+
+            var row = document.getElementById("row")
+            row.innerHTML = `<div class="content-4-1">${data.cmnd}</div>
+                            <div class="content-4-1">${data.sdt}</div>`
+        })
+    }
+
+    function showModalChinhSuaVe (makhachhang, mave) {
+        fetch('http://127.0.0.1:5000/api/chi-tiet-ve', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                'makhachhang': makhachhang,
+                'mave': mave
+            })
+        }).then(res => res.json()).then(res => {
+            data = res.data
+            var hoTen = document.getElementById("hoTen")
+            hoTen.value = `${data.ten}`
+
+            var dtdd = document.getElementById("dtdd")
+            dtdd.value = `${data.sdt}`
+
+            var cmnd = document.getElementById("cmnd")
+            cmnd.value = `${data.cmnd}`
+
+            var email = document.getElementById("email")
+            email.value = `${data.email}`
+
+            var tenChuyenBay = document.getElementById("tenChuyenBay")
+            tenChuyenBay.value = `${data.tenchuyenbay}`
+
+            var hangve = document.getElementById("hangve")
+            hangve.value = `${data.loaive}`
+
+            var giave1 = document.getElementById("giave1")
+            giave1.value = `${data.giave} VND`
+
+            var maKH = document.getElementById("maKH")
+            maKH.value = `${data.makhachhang}`
+
+        })
+    }
+
+
+
+
+
+</script>
+{% endblock %}
